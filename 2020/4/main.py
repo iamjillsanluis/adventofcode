@@ -22,19 +22,21 @@ def parse_passports():
 MANDATORY_PASSPORT_FIELDS = {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 
 
-def is_valid(passport):
+def has_all_mandatory_fields(passport):
     return not MANDATORY_PASSPORT_FIELDS - set(passport.keys())
 
 
-def part1():
+def total_valid_passports(validators):
     passports = parse_passports()
-    total_valid_passports = len([
+    return len([
         passport
         for passport in passports
-        if is_valid(passport)
+        if all(validator(passport) for validator in validators)
     ])
 
-    print("Part 1: # valid passports", total_valid_passports)
+
+def part1():
+    print("Part 1: # valid passports", total_valid_passports([has_all_mandatory_fields]))
 
 
 if __name__ == "__main__":
