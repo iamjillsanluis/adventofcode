@@ -67,6 +67,21 @@ def part1():
     print("Part 1: highest seat ID", highest_seat_id)
 
 
+def part2():
+    seat_ids = sorted([
+        boarding_pass.seat_id()
+        for boarding_pass in boarding_passes()
+    ])
+    candidates = set()
+    for index in range(0, len(seat_ids) - 1):
+        before_me, after_me = seat_ids[index], seat_ids[index+1]
+        if after_me - before_me == 2:
+            candidates.add(before_me + 1)
+
+    print("Part 2: Have seats in between", candidates)
+
+
 if __name__ == "__main__":
     test()
     part1()
+    part2()
