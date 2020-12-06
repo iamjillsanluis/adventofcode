@@ -24,5 +24,10 @@ def test():
     assert 11 == sum_of_unique_group_responses_count("test.txt")
 
 
+def part1():
+    print("Part 1: sum", sum_of_unique_group_responses_count("input.txt"))
+
+
 if __name__ == "__main__":
     test()
+    part1()
