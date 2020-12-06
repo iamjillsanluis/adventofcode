@@ -40,18 +40,14 @@ def part1():
 def sum_of_aligned_group_responses_count(file):
     result = 0
     for group_responses in groups_yes_responses(file):
-        total_group_members = len(group_responses)
-        if total_group_members == 1:
-            result += len(group_responses[0])
-        else:
-            yeses = defaultdict(int)
-            for person_yes_responses in group_responses:
-                for question in person_yes_responses:
-                    yeses[question] += 1
+        yeses = defaultdict(int)
+        for person_yes_responses in group_responses:
+            for question in person_yes_responses:
+                yeses[question] += 1
 
-            for question in yeses:
-                if yeses[question] == total_group_members:
-                    result += 1
+        for question in yeses:
+            if yeses[question] == len(group_responses):
+                result += 1
     return result
 
 
