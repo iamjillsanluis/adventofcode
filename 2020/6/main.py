@@ -1,26 +1,35 @@
+from collections import defaultdict
+
+
 def groups_yes_responses(file):
-    grouped_responses = [set()]
+    group_responses = []
     with open(file) as fh:
         for line in fh:
             line = line.strip()
             if line == "":
-                grouped_responses.append(set())
+                yield group_responses
+                group_responses = []
             else:
-                group_index = len(grouped_responses) - 1
-                for question in line:
-                    grouped_responses[group_index].add(question)
-    return grouped_responses
+                group_responses.append(line)
+
+    if group_responses:
+        yield group_responses
 
 
 def sum_of_unique_group_responses_count(file):
-    grouped_responses = groups_yes_responses(file)
-    return sum([
-        len(unique_group_responses)
-        for unique_group_responses in grouped_responses
-    ])
+    result = 0
+    for group_responses in groups_yes_responses(file):
+        unique_group_responses = set()
+        for person_yes_responses in group_responses:
+            for yes in person_yes_responses:
+                unique_group_responses.add(yes)
+
+        result += len(unique_group_responses)
+
+    return result
 
 
-def test():
+def test1():
     assert 11 == sum_of_unique_group_responses_count("test.txt")
 
 
@@ -28,6 +37,29 @@ def part1():
     print("Part 1: sum", sum_of_unique_group_responses_count("input.txt"))
 
 
+def sum_of_aligned_group_responses_count(file):
+    result = 0
+    for group_responses in groups_yes_responses(file):
+        total_group_members = len(group_responses)
+        if total_group_members == 1:
+            result += len(group_responses[0])
+        else:
+            yeses = defaultdict(int)
+            for person_yes_responses in group_responses:
+                for question in person_yes_responses:
+                    yeses[question] += 1
+
+            for question in yeses:
+                if yeses[question] == total_group_members:
+                    result += 1
+    return result
+
+
+def test2():
+    assert 6 == sum_of_aligned_group_responses_count("test.txt")
+
+
 if __name__ == "__main__":
-    test()
+    test1()
     part1()
+    test2()
