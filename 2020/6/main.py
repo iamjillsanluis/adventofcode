@@ -59,7 +59,12 @@ def test2():
     assert 6 == sum_of_aligned_group_responses_count("test.txt")
 
 
+def part2():
+    print("Part 2: sum", sum_of_aligned_group_responses_count("input.txt"))
+
+
 if __name__ == "__main__":
     test1()
     part1()
     test2()
+    part2()
