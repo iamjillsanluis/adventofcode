@@ -45,22 +45,22 @@ def resolve_looper_index(instructions):
     return -1
 
 
+def accumulator_value(instructions):
+    return sum([
+        instruction.value
+        for instruction in instructions
+        if instruction.name == "acc"
+    ])
+
+
 def accumulator_value_after_loop(file):
     instructions = ordered_instructions(parse_advent_assembly(file))
     looper_index = resolve_looper_index(instructions)
 
-    accumulator = 0
-    for index, instruction in enumerate(instructions):
-        if looper_index == index:
-            break
-
-        if instruction.name == "acc":
-            accumulator += instruction.value
-
-    return accumulator
+    return accumulator_value(instructions[0:looper_index])
 
 
-def test():
+def test1():
     assert 5 == accumulator_value_after_loop("short_input.txt")
 
 
@@ -69,5 +69,5 @@ def part1():
 
 
 if __name__ == "__main__":
-    test()
+    test1()
     part1()
