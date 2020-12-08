@@ -19,11 +19,14 @@ def parse_advent_assembly(file):
     return instructions
 
 
-def ordered_instructions(instructions):
+def reduced_instructions(instructions, is_looping=True):
     total_instructions = len(instructions)
+    total_iteration_factors = 2 if is_looping else 1
+
     loop_detectable_instructions = []
     current_instruction_index = 0
-    for _ in range(0, total_instructions * 2):
+
+    for _ in range(0, total_instructions * total_iteration_factors):
         if current_instruction_index >= total_instructions:
             break
 
@@ -56,7 +59,7 @@ def accumulator_value(instructions):
 
 
 def accumulator_value_after_loop(file):
-    instructions = ordered_instructions(parse_advent_assembly(file))
+    instructions = reduced_instructions(parse_advent_assembly(file))
     looper_index = resolve_looper_index(instructions)
 
     return accumulator_value(instructions[0:looper_index])
@@ -94,7 +97,7 @@ def non_looping_altered_instructions(file):
                 template_instructions=initial_instructions,
                 instruction_to_alter=initial_instruction
             )
-            if resolve_looper_index(ordered_instructions(looping_candidate)) < 0:
+            if resolve_looper_index(reduced_instructions(looping_candidate)) < 0:
                 return looping_candidate
 
     return []
@@ -102,20 +105,7 @@ def non_looping_altered_instructions(file):
 
 def accumulator_value_after_terminating_instructions(file):
     non_looping_instructions = non_looping_altered_instructions(file)
-    reduced_instructions = []
-    current_instruction_index = 0
-    for _ in range(0, len(non_looping_instructions)):
-        if current_instruction_index >= len(non_looping_instructions):
-            break
-
-        current_instruction = non_looping_instructions[current_instruction_index]
-        reduced_instructions.append(current_instruction)
-        if current_instruction.name == "jmp":
-            current_instruction_index += current_instruction.value
-        else:
-            current_instruction_index += 1
-
-    return accumulator_value(reduced_instructions)
+    return accumulator_value(reduced_instructions(non_looping_instructions, is_looping=False))
 
 
 def test2():
