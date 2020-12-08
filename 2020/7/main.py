@@ -44,26 +44,54 @@ def can_hold_shiny_gold_bag(outer_bag, rules):
     return False
 
 
-def count_shiny_gold_bag_outer_bags(file):
-    count = 0
+def total_shiny_gold_bag_outer_bags(file):
+    total = 0
     rules = parse_rules(file)
     for outer_bag in rules:
         if can_hold_shiny_gold_bag(outer_bag, rules):
-            count += 1
-    return count
+            total += 1
+    return total
 
 
-def test_count_shiny_gold_bag_outer_bags():
-    assert 4 == count_shiny_gold_bag_outer_bags("short_input.txt")
+def test_total_shiny_gold_bag_outer_bags():
+    assert 4 == total_shiny_gold_bag_outer_bags("short_input.txt")
 
 
 def part1():
-    count = count_shiny_gold_bag_outer_bags("input.txt")
-    print("Part 1: Total outer bags that can hold shiny gold bag", count)
+    total = total_shiny_gold_bag_outer_bags("input.txt")
+    print("Part 1: Total outer bags that can hold shiny gold bag", total)
+
+
+def total_bags_within(bag, rules):
+    bag_rule = rules.get(bag, {})
+    if not bag_rule:
+        return 0
+
+    total = 0
+    for inner_bag, inner_bag_total in bag_rule.items():
+        total += inner_bag_total + (inner_bag_total * total_bags_within(inner_bag, rules))
+    return total
+
+
+def total_individual_bags_inside_shiny_gold_bag(file):
+    rules = parse_rules(file)
+    return total_bags_within("shiny gold", rules)
+
+
+def test_total_individual_bags_inside_shiny_gold_bag():
+    assert 32 == total_individual_bags_inside_shiny_gold_bag("short_input.txt")
+    assert 126 == total_individual_bags_inside_shiny_gold_bag("short_input2.txt")
+
+
+def part2():
+    total = total_individual_bags_inside_shiny_gold_bag("input.txt")
+    print("Part 2: Total individual bags within shiny gold bag", total)
 
 
 if __name__ == "__main__":
     test_parse_rules()
-    test_count_shiny_gold_bag_outer_bags()
+    test_total_shiny_gold_bag_outer_bags()
     part1()
 
+    test_total_individual_bags_inside_shiny_gold_bag()
+    part2()
