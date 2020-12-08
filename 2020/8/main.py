@@ -20,9 +20,13 @@ def parse_advent_assembly(file):
 
 
 def ordered_instructions(instructions):
+    total_instructions = len(instructions)
     loop_detectable_instructions = []
     current_instruction_index = 0
-    for _ in range(0, len(instructions) * 2):
+    for _ in range(0, total_instructions * 2):
+        if current_instruction_index >= total_instructions:
+            break
+
         current_instruction = instructions[current_instruction_index]
         loop_detectable_instructions.append(current_instruction)
 
@@ -66,6 +70,65 @@ def part1():
     print("Part 1: accumulator", accumulator_value_after_loop("input.txt"))
 
 
+def altered_instructions(template_instructions, instruction_to_alter):
+    alternative_name = {
+        "jmp": "nop",
+        "nop": "jmp"
+    }[instruction_to_alter.name]
+
+    instructions = template_instructions.copy()
+    instructions[instruction_to_alter.index] = Instruction(
+        index=instruction_to_alter.index,
+        name=alternative_name,
+        value=instruction_to_alter.value
+    )
+
+    return instructions
+
+
+def non_looping_altered_instructions(file):
+    initial_instructions = parse_advent_assembly(file)
+    for initial_instruction in initial_instructions:
+        if initial_instruction.name != "acc":
+            looping_candidate = altered_instructions(
+                template_instructions=initial_instructions,
+                instruction_to_alter=initial_instruction
+            )
+            if resolve_looper_index(ordered_instructions(looping_candidate)) < 0:
+                return looping_candidate
+
+    return []
+
+
+def accumulator_value_after_terminating_instructions(file):
+    non_looping_instructions = non_looping_altered_instructions(file)
+    reduced_instructions = []
+    current_instruction_index = 0
+    for _ in range(0, len(non_looping_instructions)):
+        if current_instruction_index >= len(non_looping_instructions):
+            break
+
+        current_instruction = non_looping_instructions[current_instruction_index]
+        reduced_instructions.append(current_instruction)
+        if current_instruction.name == "jmp":
+            current_instruction_index += current_instruction.value
+        else:
+            current_instruction_index += 1
+
+    return accumulator_value(reduced_instructions)
+
+
+def test2():
+    assert 8 == accumulator_value_after_terminating_instructions("short_input.txt")
+
+
+def part2():
+    print("Part 2: accumulator", accumulator_value_after_terminating_instructions("input.txt"))
+
+
 if __name__ == "__main__":
     test1()
     part1()
+
+    test2()
+    part2()
