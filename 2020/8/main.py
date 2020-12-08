@@ -23,8 +23,6 @@ def ordered_instructions(instructions):
     loop_detectable_instructions = []
     current_instruction_index = 0
     for _ in range(0, len(instructions) * 2):
-        if current_instruction_index >= len(instructions):
-            breakpoint()
         current_instruction = instructions[current_instruction_index]
         loop_detectable_instructions.append(current_instruction)
 
