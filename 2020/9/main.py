@@ -30,22 +30,6 @@ def find_corrupted_entry(data, pre_amble_size):
     return candidates[0] if len(candidates) == 1 else None
 
 
-def find_contiguous_range_min_max_sum(data, target_sum):
-    index_of_target = data.index(target_sum)
-    for start_index in range(0, index_of_target):
-        running_sum = 0
-        running_index = start_index
-        while running_sum < target_sum and running_index < index_of_target:
-            running_sum += data[running_index]
-            running_index += 1
-
-        if running_sum == target_sum:
-            sorted_range = sorted(data[start_index:running_index])
-            return sorted_range[0] + sorted_range[-1]
-
-    return []
-
-
 def test1():
     assert 127 == find_corrupted_entry(data_feed("short_input.txt"), 5)
 
@@ -55,6 +39,25 @@ def part1():
     result = find_corrupted_entry(data_feed("input.txt"), 25)
     assert 22477624 == result
     print("Part 1: corrupted entry:", result)
+
+
+def find_contiguous_summing_numbers(data, target_sum):
+    for start_index in range(0, len(data)):
+        for partial_data_len in range(1, len(data)):
+            partial_data = data[start_index:partial_data_len]
+            if sum(partial_data) == target_sum:
+                sorted_range = sorted(partial_data)
+                return sorted_range[0] + sorted_range[-1]
+
+    return None
+
+
+def find_contiguous_range_min_max_sum(data, target_sum):
+    index_of_target = data.index(target_sum)
+    return (
+        find_contiguous_summing_numbers(data[:index_of_target], target_sum) or
+        find_contiguous_summing_numbers(data[index_of_target+1:], target_sum)
+    )
 
 
 def test2():
