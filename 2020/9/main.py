@@ -9,26 +9,25 @@ def data_feed(file):
     return data
 
 
-def has_summing_pairs(pre_amble, target_sum):
+def has_no_summing_pairs(data, pre_amble_size, candidate_index):
+    pre_amble = data[candidate_index - pre_amble_size:candidate_index]
+    target_sum = data[candidate_index]
+
     for augend_index, augend in enumerate(pre_amble[:-1]):
         for addend in pre_amble[augend_index + 1:]:
-            sum_candidate = augend + addend
-            if sum_candidate == target_sum:
-                return True
-    return False
+            if augend + addend == target_sum:
+                return False
+    return True
 
 
 def find_corrupted_entry(data, pre_amble_size):
-    candidates = []
-    for sum_candidate_index in range(pre_amble_size, len(data)):
-        pre_amble = data[sum_candidate_index - pre_amble_size:sum_candidate_index]
-        target_sum = data[sum_candidate_index]
-        if not has_summing_pairs(pre_amble, target_sum):
-            candidates.append(target_sum)
+    candidates = [
+        data[candidate_index]
+        for candidate_index in range(pre_amble_size, len(data))
+        if has_no_summing_pairs(data, pre_amble_size, candidate_index)
+    ]
 
-    if len(candidates) == 1:
-        return candidates[0]
-    return None
+    return candidates[0] if len(candidates) == 1 else None
 
 
 def find_contiguous_range_min_max_sum(data, target_sum):
@@ -53,7 +52,9 @@ def test1():
 
 def part1():
     test1()
-    print("Part 1: corrupted entry:", find_corrupted_entry(data_feed("input.txt"), 25))
+    result = find_corrupted_entry(data_feed("input.txt"), 25)
+    assert 22477624 == result
+    print("Part 1: corrupted entry:", result)
 
 
 def test2():
@@ -63,13 +64,9 @@ def test2():
 def part2():
     test2()
     data = data_feed("input.txt")
-    print(
-        "Part 2: sum of min-max",
-        find_contiguous_range_min_max_sum(
-            data,
-            target_sum=find_corrupted_entry(data, 25)
-        )
-    )
+    result = find_contiguous_range_min_max_sum(data,  target_sum=find_corrupted_entry(data, 25))
+    assert 2980044 == result
+    print("Part 2: sum of min-max", result)
 
 
 if __name__ == "__main__":
