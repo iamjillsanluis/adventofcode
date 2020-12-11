@@ -79,6 +79,7 @@ def test1():
 
 def part1():
     test1()
+    print("Part 1: total occupied seats", total_occupied_seats_on_stabilization(parse_layout("input.txt")))
 
 
 if __name__ == "__main__":
