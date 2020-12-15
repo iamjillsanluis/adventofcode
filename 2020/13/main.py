@@ -50,39 +50,23 @@ def part1():
     print("Part 1: solution", earliest_bus_solution("input.txt"))
 
 
-def earliest_departure_timestamp(bus_schedules, start_timestamp=None):
-    bus_departure_offsets = {
-        int(bus_id): offset
-        for offset, bus_id in enumerate(bus_schedules)
-        if bus_id != "x"
-    }
+def earliest_departure_timestamp(buses, start_timestamp=None):
+    first_bus_id = int(buses[0])
 
-    reference_bus = max(bus_id for bus_id in bus_departure_offsets)
-    reference_bus_offset = bus_departure_offsets[reference_bus]
+    step = first_bus_id
+    earliest_timestamp = first_bus_id if start_timestamp is None else start_timestamp - (start_timestamp % step)
 
-    constraints = [
-        (bus_id, offset - reference_bus_offset)
-        for bus_id, offset in bus_departure_offsets.items()
-        if bus_id != reference_bus
-    ]
+    for bus_offset in range(1, len(buses)):
+        bus_id = buses[bus_offset]
+        if bus_id != "x":
+            bus_id = int(bus_id)
+            while True:
+                if (earliest_timestamp + bus_offset) % bus_id == 0:
+                    break
+                earliest_timestamp += step
+            step *= bus_id
 
-    iteration = int((start_timestamp or reference_bus) / reference_bus)
-    while True:
-        reference_bus_timestamp = reference_bus * iteration
-        found = True
-        for bus_id, offset in constraints:
-            if (reference_bus_timestamp + offset) % bus_id > 0:
-                found = False
-                break
-
-        if found:
-            print(f"{iteration} timestamp: {reference_bus_timestamp}")
-            return reference_bus_timestamp - reference_bus_offset
-
-        if iteration % 1000000 == 0:
-            print(f"checkpoint: {iteration} timestamp: {reference_bus_timestamp}")
-
-        iteration += 1
+    return earliest_timestamp
 
 
 def test2():
